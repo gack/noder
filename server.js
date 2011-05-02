@@ -11,8 +11,6 @@ var http = require('http'),
     stat = require('node-static'),
     mongo = require('mongoskin');
 
-//db = new mongo.Db('noder', new mongo.Server(config.mongo_host, config.mongo_port, {}), {});
-//db.authenticate('gack','gack');
 db = mongo.db('admin:pass@localhost/mydb?auto_reconnnect');
 db.addListener("error", function(error) {
   console.log("Error connecting to mongo -- perhaps it isn't running?");
