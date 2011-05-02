@@ -13,8 +13,7 @@ var http = require('http'),
 
 //db = new mongo.Db('noder', new mongo.Server(config.mongo_host, config.mongo_port, {}), {});
 //db.authenticate('gack','gack');
-//db = mongo.db('admin:pass@localhost/mydb?auto_reconnnect');
-db = mongo.db('gack:gack@flame.mongohq.com:27063/noder?auto_reconnect');
+db = mongo.db('admin:pass@localhost/mydb?auto_reconnnect');
 db.addListener("error", function(error) {
   console.log("Error connecting to mongo -- perhaps it isn't running?");
 });
