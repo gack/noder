@@ -7,7 +7,7 @@ var config = {
 
 var http = require('http'),
     fs = require('fs'),
-    io = require('socket.io'),
+    nowjs = require('now'),
     stat = require('node-static'),
     mongo = require('mongoskin');
 
@@ -45,30 +45,30 @@ var server = http.createServer(function(req,res){
     });
 });
 
+
 server.listen(config.main_port, config.main_host);
-  
-var socket = io.listen(server);
 
-// Add a connect listener
-socket.on('connection', function(client){ 
-      
-  // Success!  Now listen to messages to be received
-  client.on('message',function(event){
-    console.log('Received message from client!',event);
-  });
-  client.on('disconnect',function(){
-    console.log('Server has disconnected');
-  });
-  client.on('subscribe', function(channel) {
-   // do some checks here if u like
-   console.log('subscribed to channel: ' + channel);
-   client.subscribe(channel);
-  });
-  client.on('unsubscribe', function(channel) {
-       client.unsubscribe(channel);
-  });
-  client.on('publish', function(channel, message) {
-       client.publish(channel, message);
-  });
+var everyone = nowjs.initialize(server);
 
+
+everyone.on('connect', function(){
+  this.now.room = "room 1";
+  nowjs.getGroup(this.now.room).addUser(this.user.clientId);
+  console.log("Joined: " + this.now.name);
 });
+
+
+everyone.on('disconnect', function(){
+  console.log("Left: " + this.now.name);
+});
+
+everyone.now.changeRoom = function(newRoom){
+  nowjs.getGroup(this.now.room).removeUser(this.user.clientId);
+  nowjs.getGroup(newRoom).addUser(this.user.clientId);
+  this.now.room = newRoom;
+  this.now.receiveMessage("SERVER", "You're now in " + this.now.room);
+}
+
+everyone.now.distributeMessage = function(message){
+  nowjs.getGroup(this.now.room).now.receiveMessage(this.now.name, message);
+};
